@@ -1,0 +1,4 @@
+pytest
+testcontainers[postgres,azurite,mqtt]
+loguru
+requests
