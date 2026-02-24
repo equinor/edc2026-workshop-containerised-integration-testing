@@ -2,3 +2,10 @@ pytest
 testcontainers[postgres,azurite,mqtt]
 loguru
 requests
+fastapi
+pydantic
+uvicorn
+starlette
+sqlalchemy
+psycopg[binary]>=3.2
+

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tickets-api"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "sqlalchemy",
+  "psycopg[binary]",
+  "loguru",
+  "requests",
+  "pydantic",
+  "starlette",
+  "httpx",
+  "pytest",
+  "black"
+]
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "pip-tools",
+  "pytest-mock",
+  "pytest",
+]
+
+[project.scripts]
+start-tickets-api = "tickets_api.startup_script:start"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
