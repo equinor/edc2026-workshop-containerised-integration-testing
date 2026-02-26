@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 from loguru import logger
 from sqlalchemy import Engine
 
-from tickets_api.db import create_tables, get_db, Ticket
-from tickets_api.models import TicketBuyRequest, TicketDto
+from tickets_api_ch2.db import create_tables, get_db, Ticket
+from tickets_api_ch2.models import TicketBuyRequest, TicketDto
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from tickets_api.db import make_engine, make_sessionmaker
+from tickets_api_ch2.db import make_engine, make_sessionmaker
 
 
 def create_app(database_url: str) -> FastAPI:

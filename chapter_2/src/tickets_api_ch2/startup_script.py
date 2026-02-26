@@ -3,7 +3,7 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from tickets_api.app import create_app
+from tickets_api_ch2.app import create_app
 
 
 def start() -> None:

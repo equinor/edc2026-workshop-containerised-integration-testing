@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tickets-api"
+name = "tickets-api-ch1"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
@@ -27,7 +27,7 @@ dev = [
 ]
 
 [project.scripts]
-start-tickets-api = "tickets_api.startup_script:start"
+start-tickets-api = "tickets_api_ch1.startup_script:start"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

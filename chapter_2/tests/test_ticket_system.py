@@ -3,8 +3,8 @@ import pytest
 from fastapi.testclient import TestClient
 from requests import Response
 
-from tickets_api.models import TicketBuyRequest
-from tickets_api.models import TicketDto
+from tickets_api_ch2.models import TicketBuyRequest
+from tickets_api_ch2.models import TicketDto
 
 
 @pytest.mark.parametrize(

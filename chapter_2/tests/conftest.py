@@ -5,8 +5,8 @@ import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
 
-from containers import PostgresDatabase
-from tickets_api.app import create_app
+from .containers import PostgresDatabase
+from tickets_api_ch2.app import create_app
 
 
 @pytest.fixture
