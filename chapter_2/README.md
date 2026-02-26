@@ -46,8 +46,7 @@ spin up the postgres database. The conductors won't know what hit them (because 
 We implement the postgres database as a pytest fixture similarly to how we have the `database_url`, `app` and `client`
 objects already implemented. The fixtures have now been moved to [conftest.py](./tests/conftest.py).
 
-You assemble the skeleton for a new fixture in conftest.py realizing that you will have to change the existing fixtures
-to provide the correct connection string to the `TestClient`. You also create a wrapper container class
+You assemble the skeleton for a new fixture in conftest.py. You also create a wrapper container class
 `PostgresDatabase` which can hold your database in [containers.py](./tests/containers.py).
 
 ```python
@@ -72,6 +71,69 @@ Using the official [testcontainers-python documentation](https://testcontainers-
 and your favorite AI model (or course instructor) your task is to create the `postgres_database` fixture which yields a
 `Database`object.
 
+## Task 2: Start the postgres container
+
+Add another test in [test_ticket_system.py](./tests/test_ticket_system.py) which you can use to test if the container is
+behaving as you expect it to.
+
+```python
+# tests/test_ticket_system.py
+from loguru import logger
+
+
+def test_start_postgres_container(postgres_database: PostgresDatabase) -> None:
+    logger.info(f"Started database with name {postgres_database.container.dbname}")
+    logger.info(f"Started database with image {postgres_database.container.image}")
+    logger.info(f"Started database with username {postgres_database.container.username}")
+    logger.info(f"Started database with password {postgres_database.container.password}")
+    logger.info(f"Started database with port {postgres_database.container.port}")
+    logger.info(f"Started database with connection string {postgres_database.connection_string}")
+```
+
+Execute that test while you observe your Docker Desktop GUI or monitor your containers live in the terminal with the
+command `docker stats`. Does anything happen?
+
+## Task 3: Configuring the container
+
+Provided that your container started successfully, it's time to configure it. The default configuration can be seen as
+the log output from your test. And while "test" is fair enough we are dealing with trains here! Your task is to
+explicitly set the following configuration for the container.
+
+```
+image=postgres:17
+username=train
+password=train
+dbname=train
+port=5432
+```
+
+### Hint
+
+Investigate the `PostgresContainer` class and parent classes until you find the `DockerContainer` class. Which fields
+are available in these two classes? Which configuration options are available to you?
+
+- Specifically look at the `def with_` functions which are very helpful for configuration.
+
+## Task 4: Inspecting the container
+
+When working with containers you often end up in the situation "my container starts, shuts down immediately and doesn't
+tell me anything". This situation is difficult to debug and there are two main components which are important. Logs and
+remote access. First, let's ensure the container logs are correctly passed to our pytest output.
+
+First, let us add some middleware to the `DockerContainer` object from Testcontainers which streams all the container
+logs to our pytest output.
+
+## Task 5: Inspecting the container 2
+
+Now it's time to remotely access the container (or maybe we should call it locally access?). There are multiple ways to
+do this, particularly easy with Docker Desktop, but we will do it through the terminal.
+
+First, ensure that your test `test_start_postgres_container` doesn't finish running. If it does the container will just
+be torn down by the framework and we won't have time to inspect it. Multiple ways to Rome, but either debug the test or
+add an infinite while-loop.
+
+## Task 6: Running our existing unit tests with the postgres database
+
 ### Hint
 
 It is important to use the `with` context manager.
@@ -86,42 +148,6 @@ connection_string: str = (
 )
 ```
 
-## Task 2: Start the postgres container
-
-Add another test in [test_ticket_system.py](./tests/test_ticket_system.py) which you can use to test if the container is
-behaving as you expect it to.
-
-```python
-# tests/test_ticket_system.py
-from loguru import logger
-
-
-def test_start_postgres_container(postgres_database: PostgresDatabase) -> None:
-    logger.info(f"Started database {postgres_database.container.name}")
-
-```
-
-Execute that test while you observe your Docker Desktop GUI or monitor your containers live in the terminal with the
-command `docker stats`.
-
-## Task 3: Inspecting the container
-
-When working with containers you often end up in the situation "my container starts, shuts down immediately and doesn't
-tell me anything". This situation is difficult to debug and there are two main components which are important. Logs and
-remote access. First, let's ensure the container logs are correctly passed to our pytest output.
-
-First, let us add some middleware to the `DockerContainer` object from Testcontainers which streams all the container
-logs to our pytest output.
-
-## Task 4: Inspecting the container 2
-
-Now it's time to remotely access the container (or maybe we should call it locally access?). There are multiple ways to
-do this, particularly easy with Docker Desktop, but we will do it through the terminal.
-
-First, ensure that your test `test_start_postgres_container` doesn't finish running. If it does the container will just
-be torn down by the framework and we won't have time to inspect it. Multiple ways to Rome, but either debug the test or
-add an infinite while-loop.
-
 ## Presentation topics
 
 - Why are we using yield
@@ -129,13 +155,6 @@ add an infinite while-loop.
     - Testcontainers teardown and garbage collection
 
 ## Bonus tasks
-
-### Exploring the DockerContainer object
-
-Investigate the parent classes of the `PostgresContainer` until you find the `DockerContainer` class. Which fields are
-available in this class? Which configuration options are available to you?
-
-- Specifically look at the `def with_` functions which are very helpful for configuration.
 
 ### Exploring community modules
 
