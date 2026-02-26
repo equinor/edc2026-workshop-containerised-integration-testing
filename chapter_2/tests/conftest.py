@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Iterator, Generator
 
 import pytest
@@ -11,13 +10,8 @@ from tickets_api_ch2.app import create_app
 
 
 @pytest.fixture
-def database_url(tmp_path: Path) -> str:
-    return f"sqlite:///{tmp_path}/test.db"
-
-
-@pytest.fixture
-def app(database_url: str) -> FastAPI:
-    return create_app(database_url=database_url)
+def app(postgres_database: PostgresDatabase) -> FastAPI:
+    return create_app(database_url=postgres_database.connection_string)
 
 
 @pytest.fixture
@@ -29,12 +23,14 @@ def client(app: FastAPI) -> Iterator[TestClient]:
 @pytest.fixture
 def postgres_database() -> Generator[PostgresDatabase]:
     with PostgresContainer(
-            image="postgres:17",
-            username="train",
-            password="train",
-            dbname="train").with_exposed_ports(5432) as postgres:
+        image="postgres:17",
+        username="train",
+        password="train",
+        dbname="train",
+        driver="psycopg",
+    ).with_exposed_ports(5432) as postgres:
 
         psql_url: str = postgres.get_connection_url()
-        yield PostgresDatabase(container=postgres, connection_string=psql_url, alias=postgres.dbname)
-
-
+        yield PostgresDatabase(
+            container=postgres, connection_string=psql_url, alias=postgres.dbname
+        )
