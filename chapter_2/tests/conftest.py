@@ -28,7 +28,12 @@ def client(app: FastAPI) -> Iterator[TestClient]:
 
 @pytest.fixture
 def postgres_database() -> Generator[PostgresDatabase]:
-    with PostgresContainer("postgres:17") as postgres:
+    with PostgresContainer(
+            image="postgres:17",
+            username="train",
+            password="train",
+            dbname="train").with_exposed_ports(5432) as postgres:
+
         psql_url: str = postgres.get_connection_url()
         yield PostgresDatabase(container=postgres, connection_string=psql_url, alias=postgres.dbname)
 
