@@ -39,6 +39,7 @@ def test_buy_ticket(
 
 def test_start_postgres_container(postgres_database: PostgresDatabase) -> None:
     logger.info(f"Started database with name {postgres_database.container.dbname}")
+    logger.info(f"Started database with image {postgres_database.container.image}")
     logger.info(f"Started database with username {postgres_database.container.username}")
     logger.info(f"Started database with password {postgres_database.container.password}")
     logger.info(f"Started database with port {postgres_database.container.port}")
