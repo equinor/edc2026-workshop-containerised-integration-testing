@@ -15,7 +15,7 @@ from tickets_api_ch2.models import TicketDto
     [
         ("The Orient Express", "Leonardo DaVinci", 14),
         ("Bergensbanen", "Jonas Gahr Støre", 1),
-        ("Raumabanen", "Kong Harald", "unknown"),
+        ("Raumabanen", "Kong Harald", None),
     ],
 )
 def test_buy_ticket(
