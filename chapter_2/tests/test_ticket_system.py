@@ -1,8 +1,11 @@
 import pytest
 
+from loguru import logger
+
 from fastapi.testclient import TestClient
 from requests import Response
 
+from .containers import PostgresDatabase
 from tickets_api_ch2.models import TicketBuyRequest
 from tickets_api_ch2.models import TicketDto
 
@@ -33,3 +36,10 @@ def test_buy_ticket(
     assert ticket.train_code == train_code
     assert ticket.passenger_name == passenger_name
     assert ticket.seat_number == seat_number
+
+def test_start_postgres_container(postgres_database: PostgresDatabase) -> None:
+    logger.info(f"Started database with name {postgres_database.container.dbname}")
+    logger.info(f"Started database with username {postgres_database.container.username}")
+    logger.info(f"Started database with password {postgres_database.container.password}")
+    logger.info(f"Started database with port {postgres_database.container.port}")
+    logger.info(f"Started database with connection string {postgres_database.connection_string}")

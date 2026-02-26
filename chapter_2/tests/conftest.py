@@ -4,6 +4,7 @@ from typing import Iterator, Generator
 import pytest
 from fastapi import FastAPI
 from starlette.testclient import TestClient
+from testcontainers.postgres import PostgresContainer
 
 from .containers import PostgresDatabase
 from tickets_api_ch2.app import create_app
@@ -27,6 +28,8 @@ def client(app: FastAPI) -> Iterator[TestClient]:
 
 @pytest.fixture
 def postgres_database() -> Generator[PostgresDatabase]:
-    raise NotImplementedError
+    with PostgresContainer("postgres:17") as postgres:
+        psql_url: str = postgres.get_connection_url()
+        yield PostgresDatabase(container=postgres, connection_string=psql_url, alias=postgres.dbname)
 
 
