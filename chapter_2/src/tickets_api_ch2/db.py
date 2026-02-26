@@ -16,7 +16,7 @@ class Ticket(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     train_code: Mapped[str] = mapped_column(String, nullable=False)
     passenger_name: Mapped[str] = mapped_column(String, nullable=False)
-    seat_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    seat_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
     expiration_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
 
