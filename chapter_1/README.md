@@ -35,7 +35,7 @@ source venv/bin/activate        # macOS / Linux
 Install dependencies and the application itself.
 
 ```
-pip install ".[dev]"
+pip install -e ".[dev]"
 ```
 
 Please refer back to this section for future chapters where creating a virtual environment is required.
