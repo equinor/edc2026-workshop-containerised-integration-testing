@@ -165,9 +165,14 @@ about (unless you want to run tests in parallel).
 
 ## Task 5: Running our existing unit tests with the postgres database
 
-### Hint
+Finally, we have come to running our existing unit test `test_buy_ticket` with the postgres database instead of the
+in-memory SQLite database. The moment of truth has arrived.
 
-It is important to use the `with` context manager.
+The test is currently set up to run with the `database_url` fixture which is configured to use SQLite. Your task is to
+change the fixtures such that the `app` fixture uses the `postgres_database` fixture instead of the `database_url`
+fixture. Once complete, run the unit tests again.
+
+### Hint
 
 Your postgres connection string should have the following format where values are configurable but some examples can be
 seen in [docker-compose.yml](./docker-compose.yml).
@@ -178,12 +183,6 @@ connection_string: str = (
     f"Database={database_alias}; SSL Mode=Disable;"
 )
 ```
-
-## Presentation topics
-
-- Why are we using yield
-- Why "with"?
-    - Testcontainers teardown and garbage collection
 
 ## Bonus tasks
 
