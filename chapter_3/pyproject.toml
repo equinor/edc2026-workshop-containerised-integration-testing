@@ -28,7 +28,7 @@ dev = [
 ]
 
 [project.scripts]
-start-tickets-api = "tickets_api_ch2.startup_script:start"
+start-tickets-api = "tickets_api_ch3.startup_script:start"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
