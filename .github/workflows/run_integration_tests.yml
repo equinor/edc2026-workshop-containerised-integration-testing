@@ -1,0 +1,52 @@
+name: Run integration tests
+
+on:
+  workflow_call:
+    inputs:
+      lane:
+        description: "Target environment"
+        required: true
+        type: string
+        default: 'development'
+
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "Target environment"
+        required: true
+        type: string
+        default: 'development'
+
+permissions:
+  contents: read
+
+env:
+  TICKETS_DATABASE_URL: postgresql+psycopg://train:train@db:5432/train
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: equinor/edc2026-workshop-containerised-integration-testing
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        working-directory: chapter_4
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Run integration tests with pytest
+        working-directory: chapter_4
+
+        run: |
+          pytest -s .
