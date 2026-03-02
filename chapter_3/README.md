@@ -59,4 +59,14 @@ before the service inside the container is ready.
 
 If you were to run your Tickets API as a custom container (foreshadowing), how would you implement a wait strategy to
 ensure the API is ready before starting your test? Consider your method, which we will come back to later, and then move
-on to the next chapter. 
+on to the next chapter.
+
+## Bonus task
+
+### Waiting for logs
+
+In some cases, it may be useful to wait for a specific log message to appear in the container logs before proceeding
+with the test. This can be particularly useful when waiting for an application to start up and become ready to accept
+requests. There is built-in functionality in Testcontainers to wait for log messages. Have a look at the [core
+documentation](https://testcontainers-python.readthedocs.io/en/latest/core/README.html) to learn how this can be done
+with the `wait_for_logs` method. 
