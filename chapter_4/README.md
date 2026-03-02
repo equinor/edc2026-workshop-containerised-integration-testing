@@ -1,145 +1,96 @@
-# Chapter 4 - Running Integration Tests in GitHub Actions
+# Chapter 4 - Running the integration tests in GitHub Actions (CI)
 
-In this chapter, you will configure GitHub Actions to automatically run the integration tests for the project located in the folder chapter_4.
+This repository includes a GitHub Actions workflow that automatically runs the integration tests on GitHub’s hosted runners. The goal is to reproduce the same “run tests from a clean machine” setup every time, without needing anything installed locally.
 
-### Learning objectives
+## Where the workflow lives
 
-By the end of this chapter, you will:
-- Understand what a GitHub Actions workflow is
-- Create a workflow file from scratch
-- Run a job on an Ubuntu runner
-- Install Python in CI
-- Install a Python project located in a subfolder
-- Execute integration tests using pytest
-- Debug common CI issues
+The workflow is defined as a YAML file under:
 
-### Project structure
-The Python project and integration tests are located inside:
-```
-chapter_4/
-  pyproject.toml
-  ...
-```
-Your workflow must execute commands inside this folder.
+`.github/workflows/...`
 
-## The task 
+When you push code to GitHub, GitHub scans that folder and runs workflows when their triggers match (for example: on every push, or when opening a pull request).
 
-Create a workflow that:
-1. Can be run manually from GitHub and can also be called from another workflow.
-2. Runs on `ubuntu-latest` 
-3. Installs Python 3.13.
-4. Installs the project inside chapter_4/ 
-5. Runs the integration tests using `pytest`.
+## When this workflow runs
 
-## Task 1: Create the Workflow File
-
-Create a new file `.github/workflows/integration-tests.yml` and, in that file, start by giving the workflow a name, for example `name: Run integration tests`.
-
-### Task 2: Make It Runnable from GitHub
-
-Add a manual trigger so we can start it from the GitHub UI:
-
+### 1. Manually from the Github UI
 ```
 on:
   workflow_dispatch:
-    inputs:
-      lane:
-        description: "Target environment"
-        required: true
-        type: string
-        default: 'development'
 ```
+This enables a Run workflow button in the Actions tab of your GitHub repository. When you click it, you can provide an input called `lane `(default has been set to `development`).
 
-After committing this, you should see a Run workflow button in the Actions tab.
+### 3. Called from another workflow (reusable workflow)
+```
+on:
+  workflow_call:
+```
+This means another workflow in the same org/repo can call this workflow and pass the same lane input. This is useful when you want one central “test workflow” reused by multiple pipelines.
 
-You can also add a wokflow_call so that you can run this workflow from other workflows you implement in the future.
-```
-workflow_call:
-    inputs:
-      lane:
-        description: "Target environment"
-        required: true
-        type: string
-        default: 'development'
-```
-### Task 3: Add permissions to your workflow
+## Permissions 
+
 ```
 permissions:
   contents: read
 ```
+This is a minimal permission you can set, the workflow can read the repository contents, but can’t push or modify repo contents.
 
-### Task 4: Configure Environment Variables
-The integration tests expect a database connection string via `TICKETS_DATABASE_URL` Set this environment variable in your workflow, the value should be `postgresql+psycopg://train:train@db:5432/train`.
-
-### Task 5: Define a Job
-
-Create a job named tests that runs on Ubuntu:
+## Environment variables
 ```
-jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
+env:
+  TICKETS_DATABASE_URL: postgresql+psycopg://train:train@db:5432/train
 ```
+This defines an environment variable available to all steps in the workflow. In the case of our example we only need one env variable. 
 
-This means that Github will provision a fresh Ubuntu machine where nothing is pre-installed except OS and basic tooling.
+## What this workflow does?
 
-The runner starts empty so we need to set up a list of steps that run subsequencially.
+On each run, the workflow:
+1. Checks out the workshop project code into the runner
+2. Sets up Python (so we control the Python version)
+3. Installs the project and test dependencies
+4. Runs pytest to execute the integration tests
 
-#### Step 1: Checkout the repository
+This is the same sequence you’d do locally but executed on a clean GitHub machine.
 
-The runner starts empty so your code does not exist there until you download it.
+## Step-by-step: what each step does
 
-Add a step that checks out the repository using `actions/checkout@v4`. The structure is 
+### 1. Checkout repository
 ```
 - name: Checkout repository
   uses: actions/checkout@v4
   with:
-    repository: * Name of your repo *
-    ref: * Nme of your branch * 
+    repository: equinor/edc2026-workshop-containerised-integration-testing
+    ref: main
+    path: .
 ```
+This step clones the repository `main` branch into the Github runner filesystem. We also checkout into the root of the workspace($GITHUB_WORKSPACE) by setting `path: .`.
 
-#### Step 2: Set up Python
-
-To ensure that all participants run tests with the same interpreter, add a step that uses `actions/setup-python@v5`. The structure is 
-
+### 2. Set up Python
 ```
 - name: Set up Python
   uses: actions/setup-python@v5
   with:
-    python-version: * Pytohn version you are using *
+    python-version: "3.13"
 ```
+Installs and activates Python 3.13 so you get a consistent runtime across machines and participants.
 
-#### Step 3: Install the project
-
+### 3. Install dependencies 
 ```
 - name: Install dependencies
-  working-directory: * Directory of your project *
+  working-directory: chapter_4
   run: |
-    pip install -e ".[dev]"
+    pip install -e .
 ```
 
-**Hint**: If you run this in the wrong directory, pip will fail with: `neither setup.py nor pyproject.toml` found.
+This runs `pip install -e .` inside chapter_4. `working-directory: chapter_4` is equivalent to doing `cd chapter_4` before running the command.
+`-e .` installs the Python project in “editable mode”, which is useful for development/test scenarios.
 
-#### Step 4: Run the Integration Tests
+Important requirement: the folder chapter_4 must contain a pyproject.toml or setup.py, otherwise pip will fail.
+
+### 4. Run the integration tests
 ```
 - name: Run integration tests with pytest
-  working-directory: * Directory of your project *
+  working-directory: chapter_4
   run: |
-    * Run command with pytest *
+    pytest -s .
 ```
-
-## Running the Workflow
-
-1. Commit and push your changes to the main branch in your fork.
-2. Go to the Actions tab in GitHub.
-3. Select your workflow.
-4. Click Run workflow.
-5. Open the job logs to inspect each step.
-
-## Reflection Questions
-
-After completing the exercise, consider:
-- Why do we explicitly install Python?
-- Why must we checkout the repository?
-- Why does CI not “remember” previous runs?
-- What would happen if we removed -s?
+This runs pytest inside the folder chapter_4. `-s` prints/logs the output in the GitHub Actions logs (good for learning/debugging).
