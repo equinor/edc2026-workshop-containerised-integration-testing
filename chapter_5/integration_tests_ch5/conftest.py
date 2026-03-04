@@ -5,6 +5,7 @@ from loguru import logger
 from testcontainers.core.container import DockerContainer
 
 import pytest
+from testcontainers.core.network import Network
 
 from integration_tests_ch5.custom_containers.postgres import (
     PostgresDatabase,
@@ -17,9 +18,17 @@ from integration_tests_ch5.custom_containers.tickets_api import (
 
 
 @pytest.fixture
-def tickets_api(postgres_database: PostgresDatabase) -> Generator[TicketsAPI]:
+def network():
+    with Network() as network:
+        yield network
+
+
+@pytest.fixture
+def tickets_api(
+    network: Network, postgres_database: PostgresDatabase
+) -> Generator[TicketsAPI]:
     image, container = create_tickets_api_container(
-        database_connection_string=postgres_database.connection_string
+        network=network, database_connection_string=postgres_database.connection_string
     )
 
     with image:
@@ -36,10 +45,12 @@ def tickets_api(postgres_database: PostgresDatabase) -> Generator[TicketsAPI]:
 
 
 @pytest.fixture
-def postgres_database() -> Generator[PostgresDatabase]:
+def postgres_database(network: Network) -> Generator[PostgresDatabase]:
     network_alias: str = "postgres"
 
-    with create_postgres_container(network_alias=network_alias) as postgres:
+    with create_postgres_container(
+        network=network, network_alias=network_alias
+    ) as postgres:
         wait_for_port_mapping_to_be_available(container=postgres, port=5432)
         psql_url: str = (
             f"postgresql{postgres.driver}://{postgres.username}:{postgres.password}@{network_alias}:{postgres.port}/{postgres.dbname}"
