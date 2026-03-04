@@ -10,12 +10,29 @@ from integration_tests_ch5.custom_containers.postgres import (
     PostgresDatabase,
     create_postgres_container,
 )
-from integration_tests_ch5.custom_containers.tickets_api import TicketsAPI
+from integration_tests_ch5.custom_containers.tickets_api import (
+    TicketsAPI,
+    create_tickets_api_container,
+)
 
 
 @pytest.fixture
 def tickets_api(postgres_database: PostgresDatabase) -> Generator[TicketsAPI]:
-    raise NotImplementedError
+    image, container = create_tickets_api_container(
+        database_connection_string=postgres_database.connection_string
+    )
+
+    with image:
+        with container as container:
+            wait_for_port_mapping_to_be_available(container=container, port=3000)
+            backend_url: str = f"http://localhost:{container.get_exposed_port(3000)}"
+            yield TicketsAPI(
+                container=container,
+                backend_url=backend_url,
+                name="tickets_api",
+                port=3000,
+                alias="tickets_api",
+            )
 
 
 @pytest.fixture
