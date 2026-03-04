@@ -83,7 +83,8 @@ Your task is to edit the custom container you created in task 1 to inherit from 
 `DockerContainer`. This will allow you to see the logs from the container in your test output, which is very useful for
 debugging when something goes wrong.
 
-First, run the `test_startup_of_custom_tickets_api_container` as in the previous task. What do you see?
+First, run the `test_startup_of_custom_tickets_api_container` as in the previous task. You must now run it with the
+command `pytest -s` as this disables output capture and sends logs to your terminal immediately. What do you see?
 
 Then, add a small sleep at the end of the test. What do you see now? Is the Tickets API working as you expect? If not,
 jump straight to Task 3 to understand why! If it actually works we have a problem.
