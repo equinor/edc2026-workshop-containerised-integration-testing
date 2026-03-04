@@ -1,3 +1,5 @@
+import time
+
 from loguru import logger
 
 from integration_tests_ch5.custom_containers.postgres import PostgresDatabase
@@ -18,3 +20,5 @@ def test_startup_of_custom_tickets_api_container(
         f"Started database with password {postgres_database.container.password}"
     )
     logger.info(f"Started database with port {postgres_database.container.port}")
+
+    time.sleep(5)

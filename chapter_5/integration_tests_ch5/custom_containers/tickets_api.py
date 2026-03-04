@@ -3,6 +3,8 @@ from typing import Tuple
 from testcontainers.core.container import DockerContainer
 from testcontainers.core.image import DockerImage
 
+from integration_tests.custom_containers.log_docker_container import LogDockerContainer
+
 
 class TicketsAPI:
     def __init__(
@@ -22,11 +24,10 @@ class TicketsAPI:
 
 def create_tickets_api_container(
     database_connection_string: str,
-) -> Tuple[DockerImage, DockerContainer]:
+) -> Tuple[DockerImage, LogDockerContainer]:
     image: DockerImage = DockerImage(path="tickets_api", tag="tickets_api:latest")
-    container: DockerContainer = (
-        DockerContainer(image=str(image))
-        .with_name("tickets_api")
+    container: LogDockerContainer = (
+        LogDockerContainer(image=str(image))
         .with_exposed_ports(3000)
         .with_network_aliases("tickets_api")
         .with_env("TICKETS_DATABASE_URL", database_connection_string)
