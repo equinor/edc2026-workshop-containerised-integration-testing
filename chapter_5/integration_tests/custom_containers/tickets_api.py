@@ -20,5 +20,16 @@ class TicketsAPI:
         self.alias: str = alias
 
 
-def create_tickets_api_container() -> Tuple[DockerImage, DockerContainer]:
-    raise NotImplementedError
+def create_tickets_api_container(
+    database_connection_string: str,
+) -> Tuple[DockerImage, DockerContainer]:
+    image: DockerImage = DockerImage(path="tickets_api", tag="tickets_api:latest")
+    container: DockerContainer = (
+        DockerContainer(image=str(image))
+        .with_name("tickets_api")
+        .with_exposed_ports(3000)
+        .with_network_aliases("tickets_api")
+        .with_env("TICKETS_DATABASE_URL", database_connection_string)
+    )
+
+    return image, container
