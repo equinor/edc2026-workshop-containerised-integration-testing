@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --from=build /app/venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
-EXPOSE 3017
+EXPOSE 3000
 
 # Add non-root user
 RUN useradd --create-home --uid 1000 --shell /bin/bash app

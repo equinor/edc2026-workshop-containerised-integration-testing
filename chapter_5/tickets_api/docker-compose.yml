@@ -14,7 +14,7 @@ services:
       retries: 30
 
   api:
-    build: src
+    build: .
     environment:
       TICKETS_DATABASE_URL: postgresql+psycopg://train:train@db:5432/train
     ports:

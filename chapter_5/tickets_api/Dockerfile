@@ -8,10 +8,10 @@ ENV PATH="/app/venv/bin:$PATH"
 RUN apt-get update && apt-get install -y --no-install-recommends git
 RUN apt-get install -y --no-install-recommends build-essential gcc
 
-COPY ../../chapter_1/requirements.txt .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY src .
+COPY . .
 RUN pip install .
 
 FROM python:3.14-slim
@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --from=build /app/venv /app/venv
 ENV PATH="/app/venv/bin:$PATH"
 
-EXPOSE 3017
+EXPOSE 3000
 
 # Add non-root user
 RUN useradd --create-home --uid 1000 --shell /bin/bash app
