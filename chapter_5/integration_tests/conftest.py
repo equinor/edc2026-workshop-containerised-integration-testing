@@ -14,7 +14,7 @@ from integration_tests.custom_containers.tickets_api import TicketsAPI
 
 
 @pytest.fixture
-def tickets_api(postgres_database: PostgresDatabase) -> TicketsAPI:
+def tickets_api(postgres_database: PostgresDatabase) -> Generator[TicketsAPI]:
     raise NotImplementedError
 
 
