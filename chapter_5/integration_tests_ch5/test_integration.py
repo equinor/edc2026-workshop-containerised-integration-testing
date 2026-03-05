@@ -1,4 +1,5 @@
 import time
+from http import HTTPStatus
 from typing import Dict
 
 import pytest
@@ -47,12 +48,13 @@ def test_buy_ticket(
         "passenger_name": passenger_name,
         "seat_number": seat_number,
     }
+    url: str = f"{tickets_api.backend_url}/tickets/buy"
 
-    response: Response = requests.post(url=tickets_api.backend_url, json=payload)
+    response: Response = requests.post(url=url, json=payload)
 
     content: Dict = response.json()
 
-    assert response.status_code == 200
+    assert response.status_code == HTTPStatus.CREATED
     assert content["id"]
     assert content["train_code"] == train_code
     assert content["passenger_name"] == passenger_name

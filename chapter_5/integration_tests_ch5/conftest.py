@@ -14,6 +14,7 @@ from integration_tests_ch5.custom_containers.postgres import (
 from integration_tests_ch5.custom_containers.tickets_api import (
     TicketsAPI,
     create_tickets_api_container,
+    wait_for_tickets_api_to_be_ready,
 )
 
 
@@ -35,6 +36,8 @@ def tickets_api(
         with container as container:
             wait_for_port_mapping_to_be_available(container=container, port=3000)
             backend_url: str = f"http://localhost:{container.get_exposed_port(3000)}"
+            wait_for_tickets_api_to_be_ready(backend_url=backend_url)
+
             yield TicketsAPI(
                 container=container,
                 backend_url=backend_url,
