@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
 
 from loguru import logger
-from sqlalchemy import Engine
+from sqlalchemy import Engine, text
 
 from tickets_api_ch5.db import create_tables, get_db, Ticket
 from tickets_api_ch5.models import TicketBuyRequest, TicketDto
@@ -85,5 +85,14 @@ def create_app(database_url: str) -> FastAPI:
             seat_number=ticket.seat_number,
             expiration_date=ticket.expiration_date,
         )
+
+    @app.get("/health")
+    def health():
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            return {"status": "ok"}
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail="Database unavailable") from exc
 
     return app

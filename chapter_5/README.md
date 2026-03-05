@@ -66,7 +66,30 @@ Investigate the `.with_env()` function in the `DockerContainer` class to set the
 The image must be available before you can start the container. Thus keep in mind that you have to enter a context
 manager for the image first before doing the same for the container.
 
-## Task 2: Inspecting the logs from your container
+## Task 2: More waiting
+
+When creating your custom container in task 1 you might have included the `wait_for_port_mapping_to_be_available`
+function as part of the fixture to ensure the container is ready before you continue with your testing. Working with
+containers it's good practice to ensure everything is ready before moving on.
+
+Is this enough?
+
+There is a difference between the statements "the container is ready" and "the application inside the container is
+ready". The `wait_for_port_mapping_to_be_available` function only waits for the container to be ready, but it does not
+ensure the Fast API application in Tickets API has actually started. Our tests will execute immediately when our waiting
+strategies have come to an end. If the application has not started by then, our tests will fail. This is a common issue
+when working with Testcontainers and Docker in general, and it's something you need to be aware of.
+
+Your task is to write another wait function which should this time ensure the application has started.
+
+### Hint
+
+There are several ways you can do this. We previously mentioned the `wait_for_logs` function which may be used here.
+However, we prefer to poll the API and wait for a valid response from an endpoint. To facilitate, we have added a
+`/health` endpoint to the API which makes a simple request to the database to ensure everything is ready. It can be
+found in [app.py](./tickets_api/app.py).
+
+## Task 3: Inspecting the logs from your container
 
 If task 1 went as expected you will see the log statements from the test in your terminal. However, there are no
 logs from inside the container itself. If the container works perfectly you might not bother too much, but the instant
@@ -102,7 +125,7 @@ as it's not the core purpose here. Suffice it to say that there could be many wa
 have chosen to attach another thread which is responsible for capturing the log output of the container and forwarding
 it to our test output. Additionally, we have some logic to ensure the thread and container is correctly disposed.
 
-## Task 3: Networking
+## Task 4: Networking
 
 As you hopefully saw in the previous task, our Tickets API failed to connect to the database. The obvious culprit was
 the following line in the error output.
@@ -153,7 +176,7 @@ there a difference to the log output?
 
 Those useful `.with_` configuration functions again...
 
-## Task 4: Write a test towards the Tickets API
+## Task 5: Write a test towards the Tickets API
 
 Finally, we have a functioning setup where we can run the full Tickets API as a custom container which is also able to
 talk to our database. All running in docker and started through pytest. To finish it off, lets write a proper test, not
@@ -193,7 +216,7 @@ def test_buy_ticket(
 
 ### Hint
 
-While we do have access to the `tickets_api` package here, we have not installed it and it would be better to make our
+While we do have access to the `tickets_api` package here, we have not installed it, and it would be better to make our
 tests independent of the package itself. Use a library for requests, e.g. the requests library, and verify the response
 content you receive from the API.
 
