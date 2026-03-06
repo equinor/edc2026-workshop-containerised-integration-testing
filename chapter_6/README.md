@@ -113,6 +113,35 @@ reflect your fork of the workshop repository. Once done, push the changes to the
 Go to the "Actions" tab on your Tickets API fork and verify that the "Execute integration tests chapter 6" workflow is
 present. Use the "Run workflow" button to run the workflow. Use "latest" as lane input.
 
+### Discussion: Testing on pull request with different image tags
+
+Once finished with this task you will be rewarded with the dopamine only a green checkmark can
+give. ![img.png](docs/img_dopamine.png)
+
+This is now running on every push to the main branch. We would ideally like to have it running on every pull request as
+well, which we can easily do by setting the following in our workflow. If you wish to try it, go ahead!
+
+```
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ published ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: "dev or latest"
+        required: true
+        default: latest
+```
+
+One thing to consider is what happens when the system is complex, multiple repositories are involved and you have
+different images. For example, on a pull request you might want to run towards the `:latest` images in other
+repositories while doing `:dev` for you current repository as the `:latest` tag will only be built after the pull
+request. We have plans to solve this but haven't got around to it yet.
+
 ### Discussion: Limitations of remote execution in public vs internal/private repositories
 
 The remote execution of workflows is a neat feature which allows us to trigger our integration tests from the
