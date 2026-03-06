@@ -31,7 +31,6 @@ jobs:
         with:
           repository: equinor/edc2026-workshop-containerised-integration-testing
           ref: main
-          path: chapter_6/integration_tests_ch6
 
       - name: Set up Python
         uses: actions/setup-python@v5
