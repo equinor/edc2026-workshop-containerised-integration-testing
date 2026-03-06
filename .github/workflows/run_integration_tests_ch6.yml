@@ -1,4 +1,4 @@
-name: Run integration tests
+name: Run integration tests chapter 6
 
 on:
   workflow_call:
