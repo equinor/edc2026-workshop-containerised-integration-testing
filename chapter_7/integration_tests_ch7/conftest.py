@@ -7,6 +7,18 @@ from testcontainers.core.container import DockerContainer
 import pytest
 from testcontainers.core.network import Network
 
+from chapter_7.integration_tests_ch7.custom_containers.azurite import (
+    AzuriteStorageContainer,
+    TrainLogisticsStorage,
+    azurite_connection_string_for_containers,
+    create_azurite_container,
+    ensure_blob_containers,
+)
+from chapter_7.integration_tests_ch7.custom_containers.train_logistics import (
+    TrainLogisticsAPI,
+    create_train_logistics_api_container,
+    wait_for_train_logistics_api_to_be_ready,
+)
 from integration_tests_ch7.custom_containers.postgres import (
     PostgresDatabase,
     create_postgres_container,
@@ -17,11 +29,44 @@ from integration_tests_ch7.custom_containers.tickets_api import (
     wait_for_tickets_api_to_be_ready,
 )
 
+AZURITE_ACCOUNT: str = "devstoreaccount1"
+# Default Azurite development key — not a secret
+AZURITE_KEY: str = (
+    "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
+)
+
 
 @pytest.fixture
-def network():
+def network() -> Generator[Network, None, None]:
     with Network() as network:
         yield network
+
+
+@pytest.fixture
+def train_logistics_api(
+    network: Network,
+    postgres_database: PostgresDatabase,
+    train_logistics_storage: TrainLogisticsStorage,
+) -> Generator[TrainLogisticsAPI]:
+    azurite_connection_string: str = train_logistics_storage.azurite_containers[
+        "train-logistics"
+    ].docker_connection_string
+    with create_train_logistics_api_container(
+        network=network,
+        database_connection_string=postgres_database.connection_string,
+        azure_storage_connection_string=azurite_connection_string,
+    ) as container:
+        wait_for_port_mapping_to_be_available(container=container, port=3001)
+        backend_url: str = f"http://localhost:{container.get_exposed_port(3001)}"
+        wait_for_train_logistics_api_to_be_ready(backend_url=backend_url)
+
+        yield TrainLogisticsAPI(
+            container=container,
+            backend_url=backend_url,
+            name="train_logistics_api",
+            port=3001,
+            alias="train_logistics_api",
+        )
 
 
 @pytest.fixture
@@ -57,6 +102,44 @@ def postgres_database(network: Network) -> Generator[PostgresDatabase]:
         )
         yield PostgresDatabase(
             container=postgres, connection_string=psql_url, alias=network_alias
+        )
+
+
+@pytest.fixture
+def train_logistics_storage(
+    network: Network,
+) -> Generator[TrainLogisticsStorage, None, None]:
+    azurite_container_name = "train-logistics"
+
+    with create_azurite_container(
+        network=network, name=azurite_container_name
+    ) as container:
+        wait_for_port_mapping_to_be_available(container=container, port=10000)
+
+        docker_connection_string: str = azurite_connection_string_for_containers(
+            AZURITE_ACCOUNT,
+            AZURITE_KEY,
+            azurite_container_name,
+            port=10000,
+        )
+        host_connection_string: str = azurite_connection_string_for_containers(
+            AZURITE_ACCOUNT,
+            AZURITE_KEY,
+            "localhost",
+            port=container.get_exposed_port(10000),
+        )
+
+        ensure_blob_containers(host_connection_string, "train-logistics")
+
+        yield TrainLogisticsStorage(
+            azurite_containers={
+                azurite_container_name: AzuriteStorageContainer(
+                    alias=azurite_container_name,
+                    container=container,
+                    docker_connection_string=docker_connection_string,
+                    host_connection_string=host_connection_string,
+                )
+            }
         )
 
 

@@ -9,7 +9,8 @@ description = "Internal reusable integration test harness"
 requires-python = ">=3.13"
 dependencies = [
   "pytest",
-  "testcontainers[postgres,mqtt]",
+  "testcontainers[postgres,azurite,mqtt]",
+  "azure-storage-blob",
   "pydantic",
   "loguru",
   "requests"

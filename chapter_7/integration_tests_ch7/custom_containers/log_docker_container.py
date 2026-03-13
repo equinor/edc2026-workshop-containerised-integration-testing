@@ -24,7 +24,7 @@ class LogDockerContainer(DockerContainer):
         self._stop_logs: Event = Event()
         self._logging_thread: Optional[Thread] = None
 
-    def start(self) -> LogDockerContainer:
+    def start(self) -> "LogDockerContainer":
         super().start()
 
         self._stop_logs.clear()
