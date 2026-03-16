@@ -18,15 +18,16 @@ Ensure you have a virtual environment installed for this specific chapter with p
 it in this folder as there will be several venvs in different parts of the workshop. If you're not familiar with virtual
 environments you will be at the end of this! Please ask for help if needed.
 
-Create a virtual environment.
+Create a virtual environment. Depending on your setup you may have to specify the python version in the command, e.g.
+`python3.14` instead of just `python`.
 
-```
+```bash
 python -m venv venv
 ```
 
 Activate your virtual environment.
 
-```
+```bash
 source venv/bin/activate        # macOS / Linux
 
 .\venv\Scripts\Activate.ps1     # Windows (PowerShell)
@@ -34,7 +35,7 @@ source venv/bin/activate        # macOS / Linux
 
 Install dependencies and the application itself.
 
-```
+```bash
 pip install -e ".[dev]"
 ```
 
