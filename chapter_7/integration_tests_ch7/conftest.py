@@ -7,6 +7,18 @@ from testcontainers.core.container import DockerContainer
 import pytest
 from testcontainers.core.network import Network
 
+from chapter_7.integration_tests_ch7.custom_containers.azurite import (
+    AzuriteStorageContainer,
+    TrainLogisticsStorage,
+    azurite_connection_string_for_containers,
+    create_azurite_container,
+    ensure_blob_containers,
+)
+from chapter_7.integration_tests_ch7.custom_containers.train_logistics import (
+    TrainLogisticsAPI,
+    create_train_logistics_api_container,
+    wait_for_train_logistics_api_to_be_ready,
+)
 from integration_tests_ch7.custom_containers.postgres import (
     PostgresDatabase,
     create_postgres_container,
@@ -15,6 +27,12 @@ from integration_tests_ch7.custom_containers.tickets_api import (
     TicketsAPI,
     create_tickets_api_container,
     wait_for_tickets_api_to_be_ready,
+)
+
+AZURITE_ACCOUNT: str = "devstoreaccount1"
+# Default Azurite development key — not a secret
+AZURITE_KEY: str = (
+    "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw=="
 )
 
 
@@ -78,3 +96,19 @@ def wait_for_port_mapping_to_be_available(
     raise ConnectionError(
         f"Port mapping for container {container.image} on port {port} not available within timeout"
     )
+
+
+@pytest.fixture
+def train_logistics_storage(
+    network: Network,
+) -> Generator[TrainLogisticsStorage, None, None]:
+    raise NotImplementedError
+
+
+@pytest.fixture
+def train_logistics_api(
+    network: Network,
+    postgres_database: PostgresDatabase,
+    train_logistics_storage: TrainLogisticsStorage,
+) -> Generator[TrainLogisticsAPI]:
+    raise NotImplementedError
