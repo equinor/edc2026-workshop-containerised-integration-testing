@@ -165,9 +165,11 @@ shared cloud bill, no angry conductor breathing down your neck.
 
 ## Task 4: Integration between the two APIs
 
-Where task 3 still only allowed you tu run two tests which were independent of each other, and did not interact
+Where task 3 still only allowed you to run two tests which were independent of each other, and did not interact
 in-between the two APIs, we will now write a larger scale test. As you may have noticed earlier, there is an endpoint in
-the Tickets API for counting the number of passengers on a train. Addtionally, in the Train Logistics&trade; API, there
+the Tickets API
+for [counting the number of passengers on a train](https://github.com/equinor/tickets-api/blob/64e229f9d8ecaa2f5a619b46cee6ed1c372620ca/src/tickets_api/app.py#L91-L96).
+Additionally, in the Train Logistics&trade; API, there
 is
 an [endpoint for buying new stock](https://github.com/equinor/train-logistics/blob/dc61d8818b42909146392350e71d07487fb4f407/src/train_logistics/app.py#L74-L116)
 for a train. Have a look and notice that the logistics application asks the Tickets API for the number of passengers on

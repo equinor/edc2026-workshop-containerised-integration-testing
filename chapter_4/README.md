@@ -50,7 +50,7 @@ Create a workflow that:
 Create a new file `.github/workflows/integration-tests.yml` and, in that file, start by giving the workflow a name, for
 example `name: Run integration tests`.
 
-### Task 2: Make It Runnable from GitHub
+## Task 2: Make It Runnable from GitHub
 
 Add a manual trigger so we can start it from the GitHub UI:
 
@@ -79,19 +79,19 @@ workflow_call:
         default: 'development'
 ```
 
-### Task 3: Add permissions to your workflow
+## Task 3: Add permissions to your workflow
 
 ```
 permissions:
   contents: read
 ```
 
-### Task 4: Configure Environment Variables
+## Task 4: Configure Environment Variables
 
 The integration tests expect a database connection string via `TICKETS_DATABASE_URL` Set this environment variable in
 your workflow, the value should be `postgresql+psycopg://train:train@db:5432/train`.
 
-### Task 5: Define a Job
+## Task 5: Define a Job
 
 Create a job named tests that runs on Ubuntu:
 
@@ -106,7 +106,7 @@ This means that Github will provision a fresh Ubuntu machine where nothing is pr
 
 The runner starts empty so we need to set up a list of steps that run subsequencially.
 
-#### Step 1: Checkout the repository
+### Step 1: Checkout the repository
 
 The runner starts empty so your code does not exist there until you download it.
 
@@ -120,7 +120,7 @@ Add a step that checks out the repository using `actions/checkout@v4`. The struc
     ref: * Nme of your branch * 
 ```
 
-#### Step 2: Set up Python
+### Step 2: Set up Python
 
 To ensure that all participants run tests with the same interpreter, add a step that uses `actions/setup-python@v5`. The
 structure is
@@ -132,7 +132,7 @@ structure is
     python-version: * Pytohn version you are using *
 ```
 
-#### Step 3: Install the project
+### Step 3: Install the project
 
 ```
 - name: Install dependencies
@@ -143,7 +143,7 @@ structure is
 
 **Hint**: If you run this in the wrong directory, pip will fail with: `neither setup.py nor pyproject.toml` found.
 
-#### Step 4: Run the Integration Tests
+### Step 4: Run the Integration Tests
 
 ```
 - name: Run integration tests with pytest
