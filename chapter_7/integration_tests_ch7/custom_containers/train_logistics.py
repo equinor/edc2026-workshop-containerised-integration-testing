@@ -31,7 +31,6 @@ class TrainLogisticsAPI:
 
 def create_train_logistics_api_container(
     network: Network,
-    database_connection_string: str,
     azure_storage_connection_string: str,
 ) -> LogDockerContainer:
     container: LogDockerContainer = (
@@ -39,7 +38,6 @@ def create_train_logistics_api_container(
         .with_exposed_ports(3001)
         .with_network_aliases("train_logistics_api")
         .with_network(network)
-        .with_env("TRAIN_LOGISTICS_DATABASE_URL", database_connection_string)
         .with_env("AZURE_STORAGE_CONNECTION_STRING", azure_storage_connection_string)
     )
 
