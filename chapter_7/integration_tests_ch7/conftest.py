@@ -45,7 +45,6 @@ def network() -> Generator[Network, None, None]:
 @pytest.fixture
 def train_logistics_api(
     network: Network,
-    postgres_database: PostgresDatabase,
     train_logistics_storage: TrainLogisticsStorage,
 ) -> Generator[TrainLogisticsAPI]:
     azurite_connection_string: str = train_logistics_storage.azurite_containers[
@@ -53,7 +52,6 @@ def train_logistics_api(
     ].docker_connection_string
     with create_train_logistics_api_container(
         network=network,
-        database_connection_string=postgres_database.connection_string,
         azure_storage_connection_string=azurite_connection_string,
     ) as container:
         wait_for_port_mapping_to_be_available(container=container, port=3001)
